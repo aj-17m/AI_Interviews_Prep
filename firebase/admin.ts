@@ -7,12 +7,23 @@ function initFirebaseAdmin() {
   const apps = getApps();
 
   if (!apps.length) {
+    // Validate required environment variables
+    const projectId = process.env.FIREBASE_PROJECT_ID;
+    const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
+    const privateKey = process.env.FIREBASE_PRIVATE_KEY;
+
+    if (!projectId || !clientEmail || !privateKey) {
+      throw new Error(
+        "Missing Firebase Admin credentials. Please check your environment variables: FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY"
+      );
+    }
+
     initializeApp({
       credential: cert({
-        projectId: process.env.FIREBASE_PROJECT_ID,
-        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-        // Replace newlines in the private key
-        privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
+        projectId,
+        clientEmail,
+        // Replace escaped newlines with actual newlines
+        privateKey: privateKey.replace(/\\n/g, "\n"),
       }),
     });
   }

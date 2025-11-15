@@ -6,7 +6,9 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "check-env": "node scripts/check-env.js",
+    "prebuild": "node scripts/check-env.js"
   },
   "dependencies": {
     "@ai-sdk/google": "^1.1.25",
