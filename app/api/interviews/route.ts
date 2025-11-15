@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { db } from "@/firebase/admin";
+import { getAdminDB } from "@/firebase/admin";
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -10,6 +10,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
+    const db = getAdminDB();
     const interviews = await db
       .collection("interviews")
       .where("userId", "==", userId)
