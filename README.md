@@ -28,6 +28,118 @@
 AI Interview Prep is a cutting-edge platform that revolutionizes job interview preparation through AI-powered voice interactions. Built with modern web technologies, this application provides users with realistic interview experiences, personalized questions, and detailed feedback to help them excel in their job interviews.
 
 ### Key Highlights:
+- **AI-Powered Voice Interviews**: Real-time conversations with Vapi AI
+- **Personalized Question Generation**: Custom questions based on role and tech stack
+- **Instant Feedback**: Detailed analysis and improvement suggestions
+- **Modern Tech Stack**: Next.js 15, Firebase, TypeScript, and Tailwind CSS
+
+## 📁 Project Structure Overview
+
+```
+AI_Mock_Interviews/
+├── 📂 app/                    # Next.js App Router
+│   ├── (auth)/               # Authentication routes
+│   │   ├── sign-in/         # Login page
+│   │   ├── sign-up/         # Registration page
+│   │   └── layout.tsx       # Auth layout wrapper
+│   ├── (root)/              # Main application routes
+│   │   ├── interview/       # Interview functionality
+│   │   │   ├── [id]/       # Dynamic interview pages
+│   │   │   │   ├── page.tsx     # Interview session
+│   │   │   │   └── feedback/    # Feedback results
+│   │   │   └── page.tsx    # Create interview form
+│   │   ├── layout.tsx      # Main app layout
+│   │   └── page.tsx        # Dashboard/Home page
+│   ├── api/                # API routes
+│   │   ├── interviews/     # Interview data endpoints
+│   │   └── vapi/          # AI voice integration
+│   ├── globals.css        # Global styles
+│   └── layout.tsx         # Root layout
+├── 📂 components/            # Reusable React components
+│   ├── Agent.tsx           # Voice interview component
+│   ├── AuthForm.tsx        # Authentication forms
+│   ├── InterviewCard.tsx   # Interview display cards
+│   ├── InterviewForm.tsx   # Interview creation form
+│   └── ui/                 # UI components (buttons, forms, etc.)
+├── 📂 constants/            # Application constants
+│   └── index.ts           # App constants & configurations
+├── 📂 firebase/            # Firebase configuration
+│   ├── admin.ts           # Firebase Admin SDK
+│   └── client.ts          # Firebase Client SDK
+├── 📂 lib/                 # Utility functions & actions
+│   ├── actions/           # Server actions
+│   │   ├── auth.action.ts    # Authentication logic
+│   │   └── general.action.ts # Interview & feedback logic
+│   ├── utils.ts           # Utility functions
+│   └── vapi.sdk.ts        # Vapi AI SDK integration
+├── 📂 public/              # Static assets
+│   ├── images/            # Images & icons
+│   └── covers/            # Interview cover images
+├── 📂 types/               # TypeScript type definitions
+│   └── index.d.ts         # Global type definitions
+├── 📄 .env.local           # Environment variables
+├── 📄 package.json         # Dependencies & scripts
+├── 📄 tailwind.config.ts   # Tailwind CSS configuration
+└── 📄 README.md            # Project documentation
+```
+
+## 🎯 Application Flow & Architecture
+
+### 1. **Authentication Flow**
+```
+User Registration/Login → Firebase Auth → User Dashboard
+```
+
+### 2. **Interview Creation Flow**
+```
+Dashboard → Create Interview Form → AI Question Generation → Question Preview → Voice Interview
+```
+
+### 3. **Interview Session Flow**
+```
+Start Interview → Vapi AI Voice Agent → Real-time Conversation → Transcript Recording → End Interview
+```
+
+### 4. **Feedback Generation Flow**
+```
+Interview Completion → Transcript Analysis → Google Gemini AI → Detailed Feedback → Results Display
+```
+
+## 🏗️ Core Components Architecture
+
+### **Frontend Components**
+- **InterviewForm**: Collects interview parameters (role, level, tech stack)
+- **Agent**: Manages voice interview sessions with Vapi AI
+- **InterviewCard**: Displays interview summaries and actions
+- **AuthForm**: Handles user authentication (sign-in/sign-up)
+
+### **Backend Services**
+- **Firebase Admin**: Server-side database operations
+- **Firebase Client**: Client-side authentication & real-time updates
+- **Vapi AI Integration**: Voice conversation management
+- **Google Gemini AI**: Question generation & feedback analysis
+
+### **API Routes**
+- `/api/vapi/generate`: Generates interview questions using AI
+- `/api/interviews`: Manages interview data operations
+- Server Actions: Handle authentication and data mutations
+
+## 🔄 Data Flow
+
+1. **User Authentication**: Firebase handles secure user registration/login
+2. **Interview Creation**: Form data → AI question generation → Firestore storage
+3. **Voice Interview**: Vapi AI manages real-time voice conversations
+4. **Feedback Generation**: Transcript analysis → AI-powered evaluation → Results storage
+5. **Data Persistence**: All data stored in Firestore with proper indexing
+
+## 🛠️ Technology Integration
+
+- **Next.js 15**: Full-stack React framework with App Router
+- **Firebase**: Authentication, Firestore database, and hosting
+- **Vapi AI**: Voice conversation and speech-to-text processing
+- **Google Gemini**: AI-powered question generation and feedback analysis
+- **Tailwind CSS**: Utility-first styling with custom design system
+- **TypeScript**: Type-safe development across the entire stack
 - **AI Voice Interviews**: Conduct realistic interviews with AI voice agents
 - **Personalized Questions**: Generate custom questions based on role, level, and tech stack
 - **Instant Feedback**: Get detailed analysis and improvement suggestions
