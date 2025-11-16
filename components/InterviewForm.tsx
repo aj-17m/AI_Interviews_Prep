@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { Briefcase, TrendingUp, Target, Code, Hash, Sparkles, ArrowRight, RotateCcw } from "lucide-react";
 
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
@@ -141,73 +142,191 @@ const InterviewForm = ({ userId, userName }: InterviewFormProps) => {
   }
 
   return (
-    <div className="card-border max-w-2xl">
-      <div className="card p-8">
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 form">
-            <FormField
-              control={form.control}
-              name="role"
-              label="Job Role"
-              placeholder="e.g., Frontend Developer, Data Scientist"
-              type="text"
-            />
-
-            <div>
-              <label className="label block mb-2">Experience Level</label>
-              <select
-                {...form.register("level")}
-                className="input w-full"
-              >
-                <option value="Junior">Junior</option>
-                <option value="Mid-Level">Mid-Level</option>
-                <option value="Senior">Senior</option>
-                <option value="Lead">Lead</option>
-              </select>
+    <div className="w-full max-w-3xl mx-auto animate-fadeIn">
+      <div className="card-border">
+        <div className="card p-6 sm:p-8 lg:p-10">
+          {/* Form Header */}
+          <div className="mb-8 text-center">
+            <div className="inline-flex items-center justify-center w-14 h-14 bg-primary-200/10 rounded-2xl mb-4">
+              <Sparkles className="w-7 h-7 text-primary-200" />
             </div>
+            <h3 className="text-2xl font-bold mb-2">Customize Your Interview</h3>
+            <p className="text-light-400">Fill in the details to generate personalized questions</p>
+          </div>
 
-            <div>
-              <label className="label block mb-2">Interview Type</label>
-              <select
-                {...form.register("type")}
-                className="input w-full"
-              >
-                <option value="Technical">Technical</option>
-                <option value="Behavioral">Behavioral</option>
-                <option value="Mixed">Mixed</option>
-              </select>
-            </div>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              {/* Job Role Input */}
+              <div className="space-y-2">
+                <label className="flex items-center gap-2 text-light-100 font-medium text-sm">
+                  <Briefcase className="w-4 h-4 text-primary-200" />
+                  Job Role
+                </label>
+                <FormField
+                  control={form.control}
+                  name="role"
+                  placeholder="e.g., Frontend Developer, Data Scientist, Product Manager"
+                  type="text"
+                />
+                {form.formState.errors.role && (
+                  <p className="text-destructive-100 text-sm">{form.formState.errors.role.message}</p>
+                )}
+              </div>
 
-            <FormField
-              control={form.control}
-              name="techstack"
-              label="Tech Stack"
-              placeholder="e.g., React, Node.js, Python (comma separated)"
-              type="text"
-            />
+              {/* Experience Level & Interview Type - Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Experience Level */}
+                <div className="space-y-2">
+                  <label className="flex items-center gap-2 text-light-100 font-medium text-sm">
+                    <TrendingUp className="w-4 h-4 text-primary-200" />
+                    Experience Level
+                  </label>
+                  <div className="relative">
+                    <select
+                      {...form.register("level")}
+                      className="input w-full appearance-none cursor-pointer hover:border-primary-200/50 transition-colors"
+                    >
+                      <option value="Junior">🌱 Junior</option>
+                      <option value="Mid-Level">📈 Mid-Level</option>
+                      <option value="Senior">⭐ Senior</option>
+                      <option value="Lead">👑 Lead</option>
+                    </select>
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                      <svg className="w-4 h-4 text-light-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
 
-            <div>
-              <label className="label block mb-2">Number of Questions</label>
-              <select
-                {...form.register("amount")}
-                className="input w-full"
-              >
-                <option value="3">3 Questions</option>
-                <option value="5">5 Questions</option>
-                <option value="7">7 Questions</option>
-                <option value="10">10 Questions</option>
-              </select>
-            </div>
+                {/* Interview Type */}
+                <div className="space-y-2">
+                  <label className="flex items-center gap-2 text-light-100 font-medium text-sm">
+                    <Target className="w-4 h-4 text-primary-200" />
+                    Interview Type
+                  </label>
+                  <div className="relative">
+                    <select
+                      {...form.register("type")}
+                      className="input w-full appearance-none cursor-pointer hover:border-primary-200/50 transition-colors"
+                    >
+                      <option value="Technical">💻 Technical</option>
+                      <option value="Behavioral">🧠 Behavioral</option>
+                      <option value="Mixed">🎯 Mixed</option>
+                    </select>
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                      <svg className="w-4 h-4 text-light-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
-            <Button 
-              type="submit" 
-              className="btn w-full"
-              disabled={isGenerating}
-            >
-              {isGenerating ? "Generating Questions..." : "Generate Interview Questions"}
-            </Button>
-          </form>
-        </Form>
+              {/* Tech Stack Input */}
+              <div className="space-y-2">
+                <label className="flex items-center gap-2 text-light-100 font-medium text-sm">
+                  <Code className="w-4 h-4 text-primary-200" />
+                  Tech Stack
+                </label>
+                <FormField
+                  control={form.control}
+                  name="techstack"
+                  placeholder="e.g., React, Node.js, Python, AWS (comma separated)"
+                  type="text"
+                />
+                {form.formState.errors.techstack && (
+                  <p className="text-destructive-100 text-sm">{form.formState.errors.techstack.message}</p>
+                )}
+                <p className="text-light-400 text-xs flex items-center gap-1">
+                  <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                  </svg>
+                  Separate multiple technologies with commas
+                </p>
+              </div>
+
+              {/* Number of Questions */}
+              <div className="space-y-2">
+                <label className="flex items-center gap-2 text-light-100 font-medium text-sm">
+                  <Hash className="w-4 h-4 text-primary-200" />
+                  Number of Questions
+                </label>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  {["3", "5", "7", "10"].map((num) => (
+                    <label
+                      key={num}
+                      className={`
+                        relative flex items-center justify-center p-4 rounded-xl border-2 cursor-pointer transition-all
+                        ${form.watch("amount") === num 
+                          ? "border-primary-200 bg-primary-200/10" 
+                          : "border-light-800/20 hover:border-primary-200/50 bg-dark-200/30"
+                        }
+                      `}
+                    >
+                      <input
+                        type="radio"
+                        value={num}
+                        {...form.register("amount")}
+                        className="sr-only"
+                      />
+                      <div className="text-center">
+                        <div className={`text-2xl font-bold ${form.watch("amount") === num ? "text-primary-200" : "text-white"}`}>
+                          {num}
+                        </div>
+                        <div className="text-xs text-light-400 mt-1">Questions</div>
+                      </div>
+                      {form.watch("amount") === num && (
+                        <div className="absolute top-2 right-2">
+                          <svg className="w-4 h-4 text-primary-200" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                          </svg>
+                        </div>
+                      )}
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Submit Button */}
+              <div className="pt-4">
+                <Button 
+                  type="submit" 
+                  className="btn w-full group relative overflow-hidden"
+                  disabled={isGenerating}
+                >
+                  <span className="relative z-10 flex items-center justify-center gap-2">
+                    {isGenerating ? (
+                      <>
+                        <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Generating Your Questions...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="w-5 h-5" />
+                        Generate Interview Questions
+                        <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                      </>
+                    )}
+                  </span>
+                  {!isGenerating && (
+                    <div className="absolute inset-0 bg-gradient-to-r from-primary-200/0 via-primary-200/20 to-primary-200/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                  )}
+                </Button>
+              </div>
+
+              {/* Helper Text */}
+              <div className="text-center pt-2">
+                <p className="text-light-400 text-sm">
+                  ✨ AI will generate personalized questions based on your inputs
+                </p>
+              </div>
+            </form>
+          </Form>
+        </div>
       </div>
     </div>
   );
