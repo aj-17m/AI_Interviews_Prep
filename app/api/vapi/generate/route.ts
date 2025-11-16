@@ -5,7 +5,7 @@ import { getAdminDB } from "@/firebase/admin";
 import { getRandomInterviewCover } from "@/lib/utils";
 
 export async function POST(request: Request) {
-  const { type, role, level, techstack, amount, userid } = await request.json();
+  const { type, role, level, techstack, amount, userid, scheduledFor, scheduleType } = await request.json();
 
   try {
     const { text: questions } = await generateText({
@@ -29,12 +29,16 @@ export async function POST(request: Request) {
       role: role,
       type: type,
       level: level,
-      techstack: techstack.split(","),
+      techstack: techstack.split(",").map((tech: string) => tech.trim()),
       questions: JSON.parse(questions),
       userId: userid,
       finalized: true,
       coverImage: getRandomInterviewCover(),
       createdAt: new Date().toISOString(),
+      scheduleType: scheduleType || "now",
+      scheduledFor: scheduledFor || null,
+      status: scheduleType === "later" ? "scheduled" : "in-progress",
+      startedAt: scheduleType === "now" ? new Date().toISOString() : null,
     };
 
     const db = getAdminDB();

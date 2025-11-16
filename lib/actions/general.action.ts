@@ -139,3 +139,88 @@ export async function getInterviewsByUserId(
     ...doc.data(),
   })) as Interview[];
 }
+
+export async function getScheduledInterviews(
+  userId: string
+): Promise<Interview[] | null> {
+  const db = getAdminDB();
+  const interviews = await db
+    .collection("interviews")
+    .where("userId", "==", userId)
+    .where("status", "==", "scheduled")
+    .orderBy("scheduledFor", "asc")
+    .get();
+
+  return interviews.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  })) as Interview[];
+}
+
+export async function getIncompleteInterviews(
+  userId: string
+): Promise<Interview[] | null> {
+  const db = getAdminDB();
+  const interviews = await db
+    .collection("interviews")
+    .where("userId", "==", userId)
+    .where("status", "==", "incomplete")
+    .orderBy("scheduledFor", "desc")
+    .get();
+
+  return interviews.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  })) as Interview[];
+}
+
+export async function updateInterviewStatus(
+  interviewId: string,
+  status: string
+): Promise<{ success: boolean }> {
+  try {
+    const db = getAdminDB();
+    await db.collection("interviews").doc(interviewId).update({
+      status,
+      startedAt: status === "in-progress" ? new Date().toISOString() : null,
+    });
+    return { success: true };
+  } catch (error) {
+    console.error("Error updating interview status:", error);
+    return { success: false };
+  }
+}
+
+export async function checkAndUpdateExpiredInterviews(
+  userId: string
+): Promise<void> {
+  try {
+    const db = getAdminDB();
+    const now = new Date();
+    
+    // Get all scheduled interviews
+    const scheduledInterviews = await db
+      .collection("interviews")
+      .where("userId", "==", userId)
+      .where("status", "==", "scheduled")
+      .get();
+
+    // Check each interview and mark as incomplete if past 5-minute window
+    const batch = db.batch();
+    scheduledInterviews.docs.forEach((doc) => {
+      const interview = doc.data();
+      if (interview.scheduledFor) {
+        const scheduledTime = new Date(interview.scheduledFor);
+        const minutesPassed = (now.getTime() - scheduledTime.getTime()) / (1000 * 60);
+        
+        if (minutesPassed > 5) {
+          batch.update(doc.ref, { status: "incomplete" });
+        }
+      }
+    });
+
+    await batch.commit();
+  } catch (error) {
+    console.error("Error checking expired interviews:", error);
+  }
+}

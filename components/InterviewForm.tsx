@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Briefcase, TrendingUp, Target, Code, Hash, Sparkles, ArrowRight, RotateCcw } from "lucide-react";
+import { Briefcase, TrendingUp, Target, Code, Hash, Sparkles, ArrowRight, RotateCcw, Calendar, Clock } from "lucide-react";
 
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
@@ -18,6 +18,17 @@ const interviewFormSchema = z.object({
   type: z.enum(["Technical", "Behavioral", "Mixed"]),
   techstack: z.string().min(2, "Please enter at least one technology"),
   amount: z.string().min(1, "Please select number of questions"),
+  scheduleType: z.enum(["now", "later"]),
+  scheduledDate: z.string().optional(),
+  scheduledTime: z.string().optional(),
+}).refine((data) => {
+  if (data.scheduleType === "later") {
+    return data.scheduledDate && data.scheduledTime;
+  }
+  return true;
+}, {
+  message: "Please select date and time for scheduled interview",
+  path: ["scheduledDate"],
 });
 
 interface InterviewFormProps {
@@ -38,6 +49,9 @@ const InterviewForm = ({ userId, userName }: InterviewFormProps) => {
       type: "Mixed",
       techstack: "",
       amount: "5",
+      scheduleType: "now",
+      scheduledDate: "",
+      scheduledTime: "",
     },
   });
 
@@ -45,25 +59,38 @@ const InterviewForm = ({ userId, userName }: InterviewFormProps) => {
     setIsGenerating(true);
 
     try {
+      // Calculate scheduled timestamp if scheduling for later
+      let scheduledFor = null;
+      if (data.scheduleType === "later" && data.scheduledDate && data.scheduledTime) {
+        scheduledFor = new Date(`${data.scheduledDate}T${data.scheduledTime}`).toISOString();
+      }
+
       const response = await fetch("/api/vapi/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...data,
           userid: userId,
+          scheduledFor,
+          scheduleType: data.scheduleType,
         }),
       });
 
       const result = await response.json();
 
       if (result.success) {
-        toast.success("Interview questions generated successfully!");
-        // Fetch the latest interview for this user
-        const interviewsResponse = await fetch(`/api/interviews?userId=${userId}`);
-        const interviews = await interviewsResponse.json();
-        
-        if (interviews.length > 0) {
-          setGeneratedInterview(interviews[0]);
+        if (data.scheduleType === "later") {
+          toast.success("Interview scheduled successfully!");
+          router.push("/"); // Redirect to dashboard
+        } else {
+          toast.success("Interview questions generated successfully!");
+          // Fetch the latest interview for this user
+          const interviewsResponse = await fetch(`/api/interviews?userId=${userId}`);
+          const interviews = await interviewsResponse.json();
+          
+          if (interviews.length > 0) {
+            setGeneratedInterview(interviews[0]);
+          }
         }
       } else {
         toast.error("Failed to generate interview questions");
@@ -329,6 +356,95 @@ const InterviewForm = ({ userId, userName }: InterviewFormProps) => {
                   ))}
                 </div>
               </div>
+
+              {/* Schedule Type */}
+              <div className="space-y-3">
+                <label className="flex items-center gap-2 text-light-100 font-medium text-sm">
+                  <Calendar className="w-4 h-4 text-primary-200" />
+                  When would you like to take this interview?
+                </label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {[
+                    { value: "now", icon: "⚡", label: "Start Now", desc: "Begin interview immediately" },
+                    { value: "later", icon: "📅", label: "Schedule for Later", desc: "Pick a date and time" }
+                  ].map((schedule) => (
+                    <label
+                      key={schedule.value}
+                      className={`
+                        relative flex flex-col items-center justify-center p-5 rounded-xl border-2 cursor-pointer transition-all
+                        ${form.watch("scheduleType") === schedule.value 
+                          ? "border-primary-200 bg-primary-200/10 shadow-lg shadow-primary-200/20" 
+                          : "border-light-800/20 hover:border-primary-200/50 bg-dark-200/30 hover:bg-dark-200/50"
+                        }
+                      `}
+                    >
+                      <input
+                        type="radio"
+                        value={schedule.value}
+                        {...form.register("scheduleType")}
+                        className="sr-only"
+                      />
+                      <div className="text-4xl mb-3">{schedule.icon}</div>
+                      <div className={`text-base font-semibold mb-1 ${form.watch("scheduleType") === schedule.value ? "text-primary-200" : "text-white"}`}>
+                        {schedule.label}
+                      </div>
+                      <div className="text-xs text-light-400 text-center">
+                        {schedule.desc}
+                      </div>
+                      {form.watch("scheduleType") === schedule.value && (
+                        <div className="absolute -top-2 -right-2 w-6 h-6 bg-primary-200 rounded-full flex items-center justify-center">
+                          <svg className="w-4 h-4 text-dark-100" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                        </div>
+                      )}
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Date and Time Picker (shown only when scheduling for later) */}
+              {form.watch("scheduleType") === "later" && (
+                <div className="space-y-4 p-5 bg-dark-200/30 rounded-xl border border-primary-200/20 animate-fadeIn">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <label className="flex items-center gap-2 text-light-100 font-medium text-sm">
+                        <Calendar className="w-4 h-4 text-primary-200" />
+                        Select Date
+                      </label>
+                      <input
+                        type="date"
+                        {...form.register("scheduledDate")}
+                        min={new Date().toISOString().split('T')[0]}
+                        className="input w-full"
+                      />
+                      {form.formState.errors.scheduledDate && (
+                        <p className="text-destructive-100 text-sm">{form.formState.errors.scheduledDate.message}</p>
+                      )}
+                    </div>
+                    <div className="space-y-2">
+                      <label className="flex items-center gap-2 text-light-100 font-medium text-sm">
+                        <Clock className="w-4 h-4 text-primary-200" />
+                        Select Time
+                      </label>
+                      <input
+                        type="time"
+                        {...form.register("scheduledTime")}
+                        className="input w-full"
+                      />
+                      {form.formState.errors.scheduledTime && (
+                        <p className="text-destructive-100 text-sm">{form.formState.errors.scheduledTime.message}</p>
+                      )}
+                    </div>
+                  </div>
+                  <p className="text-light-400 text-xs flex items-center gap-1">
+                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                    </svg>
+                    You'll have 5 minutes after the scheduled time to start the interview
+                  </p>
+                </div>
+              )}
 
               {/* Submit Button */}
               <div className="pt-4">

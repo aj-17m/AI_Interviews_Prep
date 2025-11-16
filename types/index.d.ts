@@ -23,6 +23,10 @@ interface Interview {
   userId: string;
   type: string;
   finalized: boolean;
+  scheduledFor?: string; // ISO timestamp for scheduled interviews
+  scheduleType: "now" | "later"; // Whether to start now or schedule
+  status: "scheduled" | "in-progress" | "completed" | "incomplete"; // Interview status
+  startedAt?: string; // When the interview was actually started
 }
 
 interface CreateFeedbackParams {

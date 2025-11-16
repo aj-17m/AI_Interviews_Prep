@@ -7,6 +7,7 @@ import { getRandomInterviewCover } from "@/lib/utils";
 import {
   getFeedbackByInterviewId,
   getInterviewById,
+  updateInterviewStatus,
 } from "@/lib/actions/general.action";
 import { getCurrentUser } from "@/lib/actions/auth.action";
 import DisplayTechIcons from "@/components/DisplayTechIcons";
@@ -18,6 +19,28 @@ const InterviewDetails = async ({ params }: RouteParams) => {
 
   const interview = await getInterviewById(id);
   if (!interview) redirect("/");
+
+  // Check if interview is scheduled and if it's time to start
+  if (interview.status === "scheduled" && interview.scheduledFor) {
+    const scheduledTime = new Date(interview.scheduledFor);
+    const now = new Date();
+    const minutesPassed = (now.getTime() - scheduledTime.getTime()) / (1000 * 60);
+    
+    // If scheduled time hasn't arrived yet
+    if (minutesPassed < 0) {
+      redirect("/?error=too-early");
+    }
+    
+    // If more than 5 minutes have passed
+    if (minutesPassed > 5) {
+      // Mark as incomplete and redirect
+      await updateInterviewStatus(id, "incomplete");
+      redirect("/?error=expired");
+    }
+    
+    // Update status to in-progress
+    await updateInterviewStatus(id, "in-progress");
+  }
 
   const feedback = await getFeedbackByInterviewId({
     interviewId: id,
