@@ -2,12 +2,11 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Calendar, Clock, Briefcase, Code } from "lucide-react";
+import { Calendar, Clock, Briefcase } from "lucide-react";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 
 import { Button } from "./ui/button";
-import DisplayTechIcons from "./DisplayTechIcons";
 
 dayjs.extend(relativeTime);
 
@@ -76,7 +75,21 @@ const ScheduledInterviewCard = ({ interview }: ScheduledInterviewCardProps) => {
 
         {/* Tech Stack */}
         <div className="mb-4">
-          <DisplayTechIcons techStack={interview.techstack} />
+          <div className="flex flex-wrap gap-2">
+            {interview.techstack.slice(0, 5).map((tech) => (
+              <span
+                key={tech}
+                className="px-3 py-1 bg-dark-200/50 rounded-lg text-xs text-light-100 border border-light-800/20"
+              >
+                {tech}
+              </span>
+            ))}
+            {interview.techstack.length > 5 && (
+              <span className="px-3 py-1 bg-dark-200/50 rounded-lg text-xs text-light-400">
+                +{interview.techstack.length - 5} more
+              </span>
+            )}
+          </div>
         </div>
 
         {/* Interview Type */}
