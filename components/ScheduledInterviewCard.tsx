@@ -17,6 +17,12 @@ interface ScheduledInterviewCardProps {
 
 const ScheduledInterviewCard = ({ interview }: ScheduledInterviewCardProps) => {
   const router = useRouter();
+  
+  // Add null check for scheduledFor
+  if (!interview.scheduledFor) {
+    return null;
+  }
+  
   const scheduledTime = dayjs(interview.scheduledFor);
   const now = dayjs();
   const canStart = now.isAfter(scheduledTime) && now.diff(scheduledTime, "minute") <= 5;

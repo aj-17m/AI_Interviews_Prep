@@ -148,13 +148,18 @@ export async function getScheduledInterviews(
     .collection("interviews")
     .where("userId", "==", userId)
     .where("status", "==", "scheduled")
-    .orderBy("scheduledFor", "asc")
     .get();
 
-  return interviews.docs.map((doc) => ({
+  // Sort in memory to avoid composite index requirement
+  const interviewList = interviews.docs.map((doc) => ({
     id: doc.id,
     ...doc.data(),
   })) as Interview[];
+
+  return interviewList.sort((a, b) => {
+    if (!a.scheduledFor || !b.scheduledFor) return 0;
+    return new Date(a.scheduledFor).getTime() - new Date(b.scheduledFor).getTime();
+  });
 }
 
 export async function getIncompleteInterviews(
@@ -165,13 +170,18 @@ export async function getIncompleteInterviews(
     .collection("interviews")
     .where("userId", "==", userId)
     .where("status", "==", "incomplete")
-    .orderBy("scheduledFor", "desc")
     .get();
 
-  return interviews.docs.map((doc) => ({
+  // Sort in memory to avoid composite index requirement
+  const interviewList = interviews.docs.map((doc) => ({
     id: doc.id,
     ...doc.data(),
   })) as Interview[];
+
+  return interviewList.sort((a, b) => {
+    if (!a.scheduledFor || !b.scheduledFor) return 0;
+    return new Date(b.scheduledFor).getTime() - new Date(a.scheduledFor).getTime();
+  });
 }
 
 export async function updateInterviewStatus(

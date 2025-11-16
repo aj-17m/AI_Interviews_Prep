@@ -30,12 +30,12 @@ async function Home() {
   // Filter out scheduled and incomplete from user interviews
   const completedInterviews = userInterviews?.filter(
     (interview) => interview.status === "completed" || interview.scheduleType === "now"
-  );
+  ) || [];
 
-  const hasPastInterviews = completedInterviews?.length! > 0;
-  const hasUpcomingInterviews = allInterview?.length! > 0;
-  const hasScheduledInterviews = scheduledInterviews?.length! > 0;
-  const hasIncompleteInterviews = incompleteInterviews?.length! > 0;
+  const hasPastInterviews = (completedInterviews?.length || 0) > 0;
+  const hasUpcomingInterviews = (allInterview?.length || 0) > 0;
+  const hasScheduledInterviews = (scheduledInterviews?.length || 0) > 0;
+  const hasIncompleteInterviews = (incompleteInterviews?.length || 0) > 0;
 
   return (
     <>
