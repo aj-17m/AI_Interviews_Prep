@@ -62,7 +62,7 @@ async function Home() {
 
       {/* Scheduled Interviews Section */}
       {hasScheduledInterviews && (
-        <section className="flex flex-col gap-6 mt-8">
+        <section id="scheduled" className="flex flex-col gap-6 mt-8 scroll-mt-8">
           <div className="flex items-center gap-3">
             <h2>📅 Scheduled Interviews</h2>
             <span className="px-3 py-1 bg-primary-200/20 rounded-full text-primary-200 text-sm font-medium">
@@ -110,7 +110,7 @@ async function Home() {
         </section>
       )}
 
-      <section className="flex flex-col gap-6 mt-8">
+      <section id="history" className="flex flex-col gap-6 mt-8 scroll-mt-8">
         <h2>Your Completed Interviews</h2>
 
         <div className="interviews-section">
