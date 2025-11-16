@@ -173,53 +173,95 @@ const InterviewForm = ({ userId, userName }: InterviewFormProps) => {
                 )}
               </div>
 
-              {/* Experience Level & Interview Type - Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {/* Experience Level */}
-                <div className="space-y-2">
-                  <label className="flex items-center gap-2 text-light-100 font-medium text-sm">
-                    <TrendingUp className="w-4 h-4 text-primary-200" />
-                    Experience Level
-                  </label>
-                  <div className="relative">
-                    <select
-                      {...form.register("level")}
-                      className="input w-full appearance-none cursor-pointer hover:border-primary-200/50 transition-colors"
+              {/* Experience Level */}
+              <div className="space-y-3">
+                <label className="flex items-center gap-2 text-light-100 font-medium text-sm">
+                  <TrendingUp className="w-4 h-4 text-primary-200" />
+                  Experience Level
+                </label>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  {[
+                    { value: "Junior", icon: "🌱", label: "Junior" },
+                    { value: "Mid-Level", icon: "📈", label: "Mid-Level" },
+                    { value: "Senior", icon: "⭐", label: "Senior" },
+                    { value: "Lead", icon: "👑", label: "Lead" }
+                  ].map((level) => (
+                    <label
+                      key={level.value}
+                      className={`
+                        relative flex flex-col items-center justify-center p-4 rounded-xl border-2 cursor-pointer transition-all
+                        ${form.watch("level") === level.value 
+                          ? "border-primary-200 bg-primary-200/10 shadow-lg shadow-primary-200/20" 
+                          : "border-light-800/20 hover:border-primary-200/50 bg-dark-200/30 hover:bg-dark-200/50"
+                        }
+                      `}
                     >
-                      <option value="Junior">🌱 Junior</option>
-                      <option value="Mid-Level">📈 Mid-Level</option>
-                      <option value="Senior">⭐ Senior</option>
-                      <option value="Lead">👑 Lead</option>
-                    </select>
-                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
-                      <svg className="w-4 h-4 text-light-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
-                    </div>
-                  </div>
+                      <input
+                        type="radio"
+                        value={level.value}
+                        {...form.register("level")}
+                        className="sr-only"
+                      />
+                      <div className="text-3xl mb-2">{level.icon}</div>
+                      <div className={`text-sm font-medium text-center ${form.watch("level") === level.value ? "text-primary-200" : "text-light-100"}`}>
+                        {level.label}
+                      </div>
+                      {form.watch("level") === level.value && (
+                        <div className="absolute -top-2 -right-2 w-6 h-6 bg-primary-200 rounded-full flex items-center justify-center">
+                          <svg className="w-4 h-4 text-dark-100" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                        </div>
+                      )}
+                    </label>
+                  ))}
                 </div>
+              </div>
 
-                {/* Interview Type */}
-                <div className="space-y-2">
-                  <label className="flex items-center gap-2 text-light-100 font-medium text-sm">
-                    <Target className="w-4 h-4 text-primary-200" />
-                    Interview Type
-                  </label>
-                  <div className="relative">
-                    <select
-                      {...form.register("type")}
-                      className="input w-full appearance-none cursor-pointer hover:border-primary-200/50 transition-colors"
+              {/* Interview Type */}
+              <div className="space-y-3">
+                <label className="flex items-center gap-2 text-light-100 font-medium text-sm">
+                  <Target className="w-4 h-4 text-primary-200" />
+                  Interview Type
+                </label>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  {[
+                    { value: "Technical", icon: "💻", label: "Technical", desc: "Code & System Design" },
+                    { value: "Behavioral", icon: "🧠", label: "Behavioral", desc: "Soft Skills & Experience" },
+                    { value: "Mixed", icon: "🎯", label: "Mixed", desc: "Both Technical & Behavioral" }
+                  ].map((type) => (
+                    <label
+                      key={type.value}
+                      className={`
+                        relative flex flex-col items-center justify-center p-5 rounded-xl border-2 cursor-pointer transition-all
+                        ${form.watch("type") === type.value 
+                          ? "border-primary-200 bg-primary-200/10 shadow-lg shadow-primary-200/20" 
+                          : "border-light-800/20 hover:border-primary-200/50 bg-dark-200/30 hover:bg-dark-200/50"
+                        }
+                      `}
                     >
-                      <option value="Technical">💻 Technical</option>
-                      <option value="Behavioral">🧠 Behavioral</option>
-                      <option value="Mixed">🎯 Mixed</option>
-                    </select>
-                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
-                      <svg className="w-4 h-4 text-light-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
-                    </div>
-                  </div>
+                      <input
+                        type="radio"
+                        value={type.value}
+                        {...form.register("type")}
+                        className="sr-only"
+                      />
+                      <div className="text-4xl mb-3">{type.icon}</div>
+                      <div className={`text-base font-semibold mb-1 ${form.watch("type") === type.value ? "text-primary-200" : "text-white"}`}>
+                        {type.label}
+                      </div>
+                      <div className="text-xs text-light-400 text-center">
+                        {type.desc}
+                      </div>
+                      {form.watch("type") === type.value && (
+                        <div className="absolute -top-2 -right-2 w-6 h-6 bg-primary-200 rounded-full flex items-center justify-center">
+                          <svg className="w-4 h-4 text-dark-100" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                        </div>
+                      )}
+                    </label>
+                  ))}
                 </div>
               </div>
 
